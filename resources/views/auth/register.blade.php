@@ -79,11 +79,11 @@
                     </form>
 
                     <div class="row mt-3">
-                        <div class="col-md-6 offset-md-4">
-                            <a href="{{ route('login') }}" class="btn btn-link">
-                                {{ __('ログイン画面へ戻る') }}
-                            </a>
-                        </div>
+                    <div class="col-md-8 offset-md-4 mt-2">
+                      <a class="btn btn-success" href="{{ route('login') }}">
+                        {{ __('戻る') }}
+                      </a>
+                    </div>
                     </div>
                 </div>
             </div>

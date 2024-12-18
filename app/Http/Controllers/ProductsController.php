@@ -8,8 +8,25 @@ use Illuminate\Http\Request;
 
 class ProductsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Product::with('company'); // companyリレーションをロード
+
+    // メーカー名検索
+    if ($request->filled('company_name')) {
+        $query->whereHas('company', function ($q) use ($request) {
+            $q->where('company_name', 'like', '%' . $request->company_name . '%');
+        });
+    }
+
+    // 商品名検索
+    if ($request->filled('product_name')) {
+        $query->where('product_name', 'like', '%' . $request->product_name . '%');
+    }
+
+    $products = $query->get();
+
+    return view('products.index', compact('products'));
         // products テーブルのデータを取得
         $products = Product::with('company')->get();
 
