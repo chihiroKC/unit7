@@ -13,8 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->text('comment')->nullable()->after('stock');
+        Schema::create('sales', function (Blueprint $table) {
+            $table->id();
+            $table->integer('product_id'); // 商品ID
+            $table->timestamps(); 
         });
     }
 
@@ -25,8 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('comment');
-        });
+        Schema::dropIfExists('sales');
     }
 };
