@@ -15,16 +15,25 @@
                         </div>
                     @endif
 
+                    <!-- バリデーションエラーを全て表示 -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <!-- ユーザ名の入力フィールド -->
                         <div class="row mb-3">
                             <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('ユーザ名') }}</label>
-
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -33,12 +42,11 @@
                             </div>
                         </div>
 
+                        <!-- メールアドレスの入力フィールド -->
                         <div class="row mb-3">
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('メールアドレス') }}</label>
-
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -47,12 +55,11 @@
                             </div>
                         </div>
 
+                        <!-- パスワードの入力フィールド -->
                         <div class="row mb-3">
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('パスワード') }}</label>
-
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -61,14 +68,15 @@
                             </div>
                         </div>
 
+                        <!-- パスワード確認の入力フィールド -->
                         <div class="row mb-3">
                             <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('パスワード確認') }}</label>
-
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
 
+                        <!-- 登録ボタン -->
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
@@ -78,13 +86,15 @@
                         </div>
                     </form>
 
+                    <!-- 戻るボタン -->
                     <div class="row mt-3">
-                    <div class="col-md-8 offset-md-4 mt-2">
-                      <a class="btn btn-success" href="{{ route('login') }}">
-                        {{ __('戻る') }}
-                      </a>
+                        <div class="col-md-6 offset-md-4">
+                            <a class="btn btn-secondary" href="{{ route('login') }}">
+                                {{ __('戻る') }}
+                            </a>
+                        </div>
                     </div>
-                    </div>
+
                 </div>
             </div>
         </div>

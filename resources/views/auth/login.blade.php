@@ -8,6 +8,19 @@
                 <div class="card-header">{{ __('ユーザーログイン画面') }}</div>
 
                 <div class="card-body">
+
+
+                <!-- バリデーションエラーを全て表示 -->
+                @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 

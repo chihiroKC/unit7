@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers\Auth;
 
@@ -9,59 +9,71 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    // ログイン後のリダイレクト先
+    protected $redirectTo = '/products';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
-    
-    public function store(Request $request)
+
+    /**
+     * カスタムログイン処理
+     */
+    public function login(Request $request)
     {
-        // ログイン認証処理
+        // バリデーション
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string|min:8',
+        ], [
+            'required' => ':attributeは必須です。',
+            'email' => ':attributeは有効な形式で入力してください。',
+            'min' => ':attributeは:min文字以上で入力してください。',
+        ], [
+            'email' => 'メールアドレス',
+            'password' => 'パスワード',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            // ログイン成功後、productsページにリダイレクト
-            return redirect()->intended('/products');
+        // 認証試行
+        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended($this->redirectTo)
+                ->with('success', 'ログインしました。');
         }
 
-        // ログイン失敗
+        // 認証失敗時
         return back()->withErrors([
-            'email' => 'メールアドレスかパスワードが間違っています。',
-        ]);
+            'email' => 'メールアドレスまたはパスワードが正しくありません。',
+        ])->withInput();
     }
-    // LoginControllerのauthenticatedメソッド
-public function authenticated(Request $request, $user)
-{
-    return redirect()->route('products.index');  // ログイン後に companies.blade.php に遷移
-}
 
+    /**
+     * ログアウト処理
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'ログアウトしました。');
+    }
+
+    /**
+     * 認証後のリダイレクト処理
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->isAdmin()) {
+            return redirect('/admin/dashboard')
+                ->with('success', '管理者としてログインしました。');
+        }
+
+        return redirect()->intended($this->redirectTo)
+            ->with('success', 'ログインしました。');
+    }
 }

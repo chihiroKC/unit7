@@ -54,7 +54,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
     }
 
@@ -79,9 +79,21 @@ class RegisterController extends Controller
 {
     // バリデーション
     $request->validate([
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6|confirmed',
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ], [
+        'required' => ':attributeは必須です。',
+        'unique' => ':attributeは既に使われている!',
+        'email' => ':attributeは有効なメールアドレス形式で入力を、、!',
+        'min' => ':attributeは:min文字以上で入力しなきゃダメだぞ',
+        'confirmed' => ':attributeが一致しないな〜',
+    ], [
+        'name' => 'ユーザー名',
+        'email' => 'メールアドレス',
+        'password' => 'パスワード',
     ]);
+    
 
     // ユーザーの作成
     $user = User::create([
