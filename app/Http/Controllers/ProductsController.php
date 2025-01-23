@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest; // フォームリクエストをインポート
 use App\Models\Product;
 use App\Models\Company;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class ProductsController extends Controller
 {
@@ -36,19 +37,10 @@ class ProductsController extends Controller
         return view('products_add', compact('companies'));
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         try {
-            $request->validate([
-                'product_name' => 'required|string|max:255',
-                'price' => 'required|integer|min:0',
-                'stock' => 'required|integer|min:0',
-                'company_id' => 'required|exists:companies,id',
-                'comment' => 'nullable|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-
-            $data = $request->except('image');
+            $data = $request->validated(); // バリデーション済みデータを取得
 
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')->store('products', 'public');
@@ -92,20 +84,11 @@ class ProductsController extends Controller
         return view('products_edit', compact('product', 'companies'));
     }
 
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
         try {
-            $request->validate([
-                'product_name' => 'required|string|max:255',
-                'price' => 'required|numeric',
-                'stock' => 'required|integer',
-                'company_id' => 'required|exists:companies,id',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-
             $product = Product::findOrFail($id);
-
-            $data = $request->except('image');
+            $data = $request->validated(); // バリデーション済みデータを取得
 
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')->store('products', 'public');
