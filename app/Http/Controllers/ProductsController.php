@@ -11,25 +11,24 @@ use Illuminate\Http\Request;
 class ProductsController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Product::with('company');
+{
+    $query = Product::with('company');
+    $companies = Company::all(); // メーカー一覧を取得
 
-        // メーカー名検索
-        if ($request->filled('company_name')) {
-            $query->whereHas('company', function ($q) use ($request) {
-                $q->where('company_name', 'like', '%' . $request->company_name . '%');
-            });
-        }
-
-        // 商品名検索
-        if ($request->filled('product_name')) {
-            $query->where('product_name', 'like', '%' . $request->product_name . '%');
-        }
-
-        $products = $query->get();
-
-        return view('products.index', compact('products'));
+    // メーカー名検索（セレクトボックス用に修正）
+    if ($request->filled('company_id')) {
+        $query->where('company_id', $request->company_id);
     }
+
+    // 商品名検索
+    if ($request->filled('product_name')) {
+        $query->where('product_name', 'like', '%' . $request->product_name . '%');
+    }
+
+    $products = $query->get();
+
+    return view('products.index', compact('products', 'companies'));
+}
 
     public function add()
     {

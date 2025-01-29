@@ -1,28 +1,47 @@
 @extends('layouts.app')
 
 @section('content')
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
 <div class="container">
     <h1>商品一覧</h1>
     
     <!-- 検索フォーム -->
-    <form action="{{ route('products.index') }}" method="GET" class="mb-3">
-        <div class="row">
-            <!-- メーカー名検索 -->
-            <div class="col-md-4">
-                <input type="text" name="company_name" class="form-control" placeholder="メーカー名" value="{{ request('company_name') }}">
-            </div>
-
-            <!-- 商品名検索 -->
-            <div class="col-md-4">
-                <input type="text" name="product_name" class="form-control" placeholder="商品名" value="{{ request('product_name') }}">
-            </div>
-
-            <!-- 検索ボタン -->
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary">検索</button>
-            </div>
+<form action="{{ route('products.index') }}" method="GET" class="mb-3">
+    <div class="row">
+        <!-- メーカー名検索 (セレクトボックス) -->
+        <div class="col-md-4">
+        <select name="company_id" class="form-control">
+    <option value="">メーカーを選択</option>
+    @foreach ($companies as $company)
+        <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>
+            {{ $company->company_name }}
+        </option>
+    @endforeach
+</select>
         </div>
-    </form>
+
+        <!-- 商品名検索 -->
+        <div class="col-md-4">
+            <input type="text" name="product_name" class="form-control" placeholder="商品名" value="{{ request('product_name') }}">
+        </div>
+
+        <!-- 検索ボタン -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">検索</button>
+        </div>
+    </div>
+</form>
 
     <a href="{{ route('products.add') }}" class="btn btn-success mb-3">新規登録</a>
 

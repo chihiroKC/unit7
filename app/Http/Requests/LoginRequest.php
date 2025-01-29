@@ -33,7 +33,7 @@ class LoginRequest extends FormRequest
         return [
             'email.required' => 'メールアドレスを教えてください〜',
             'email.email' => 'それはメールアドレスではない、、',
-            'password.required' => 'パスワードつくろ＾＾',
+            'password.required' => 'パスワードが無ければ通れません！',
             'password.min' => 'パスワードは8文字以上で!',
         ];
     }

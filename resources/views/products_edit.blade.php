@@ -13,15 +13,7 @@
     </div>
 @endif
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+
 
 <div class="container">
     <h1>商品編集</h1>
@@ -36,23 +28,45 @@
         </div>
 
         <div class="form-group">
-            <label for="product_name">商品名 <span class="text-danger">*</span></label>
-            <input type="text" name="product_name" id="product_name" class="form-control" value="{{ $product->product_name }}" required>
-        </div>
+    <label for="product_name">商品名 <span class="text-danger">*</span></label>
+    <input type="text" 
+           name="product_name" 
+           id="product_name" 
+           class="form-control @error('product_name') is-invalid @enderror" 
+           value="{{ old('product_name', $product->product_name ?? '') }}">
+    @error('product_name')
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $message }}</strong>
+        </span>
+    @enderror
+</div>
 
         <div class="form-group">
-            <label for="price">価格 <span class="text-danger">*</span></label>
-            <input type="number" name="price" id="price" class="form-control" value="{{ $product->price }}" required>
-        </div>
+    <label for="price">価格 <span class="text-danger">*</span></label>
+    <input type="text" name="price" id="price" 
+           class="form-control @error('price') is-invalid @enderror" 
+           value="{{ old('price' , $product->price ?? '') }}">
+    @error('price')
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $message }}</strong>
+        </span>
+    @enderror
+</div>
 
-        <div class="form-group">
-            <label for="stock">在庫数 <span class="text-danger">*</span></label>
-            <input type="number" name="stock" id="stock" class="form-control" value="{{ $product->stock }}" required>
-        </div>
-
+<div class="form-group">
+    <label for="stock">在庫数 <span class="text-danger">*</span></label>
+    <input type="text" name="stock" id="stock" 
+           class="form-control @error('stock') is-invalid @enderror" 
+           value="{{ old('stock', $product->stock ?? '') }}">
+    @error('stock')
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $message }}</strong>
+        </span>
+    @enderror
+</div>
         <div class="form-group">
             <label for="company_id">メーカー名 <span class="text-danger">*</span></label>
-            <select name="company_id" id="company_id" class="form-control" required>
+            <select name="company_id" id="company_id" class="form-control" >
                 <option value="" disabled>選択してください</option>
                 @foreach ($companies as $company)
                     <option value="{{ $company->id }}" {{ $product->company_id == $company->id ? 'selected' : '' }}>

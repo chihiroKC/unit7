@@ -39,7 +39,7 @@ class ProductRequest extends FormRequest
             'product_name.required' => '商品名は商品にとって命だよ',
             'price.required' => 'タダで売っちゃダメ！',
             'stock.required' => '何個売る？',
-            // 他のカスタムメッセージを追加
+            'company_id.required' => '誰が作ってくれたの？',
         ];
     }
 }
