@@ -15,6 +15,10 @@ class ProductsController extends Controller
     $query = Product::with('company');
     $companies = Company::all(); // メーカー一覧を取得
 
+    // ソートの設定（初期値: id降順）
+    $orderBy = $request->input('order_by', 'id');
+    $orderDirection = $request->input('order_direction', 'desc');
+
     // メーカー名検索（セレクトボックス用に修正）
     if ($request->filled('company_id')) {
         $query->where('company_id', $request->company_id);
@@ -25,7 +29,24 @@ class ProductsController extends Controller
         $query->where('product_name', 'like', '%' . $request->product_name . '%');
     }
 
-    $products = $query->get();
+     // 価格範囲検索
+     if ($request->filled('price_min')) {
+        $query->where('price', '>=', $request->price_min);
+    }
+    if ($request->filled('price_max')) {
+        $query->where('price', '<=', $request->price_max);
+    }
+
+    // 在庫範囲検索
+    if ($request->filled('stock_min')) {
+        $query->where('stock', '>=', $request->stock_min);
+    }
+    if ($request->filled('stock_max')) {
+        $query->where('stock', '<=', $request->stock_max);
+    }
+
+    // ソートを適用
+    $products = $query->orderBy($orderBy, $orderDirection)->paginate(10);
 
     return view('products.index', compact('products', 'companies'));
 }
@@ -61,19 +82,18 @@ class ProductsController extends Controller
 
     public function delete($id)
     {
-        try {
-            $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
+    if (!$product) {
+        return response()->json(['success' => false, 'message' => '商品が見つかりません。']);
+    }
 
-            $product->delete();
-
-            return redirect()->route('products.index')->with('success', '商品を削除しました。');
-        } catch (\Exception $e) {
-            return redirect()->route('products.index')->with('error', '商品を削除できませんでした: ' . $e->getMessage());
-        }
+    try {
+        $product->delete();
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => '削除に失敗しました。']);
+    }
     }
 
     public function edit($id)
@@ -105,4 +125,52 @@ class ProductsController extends Controller
             return back()->withInput()->with('error', '商品情報を更新できませんでした: ' . $e->getMessage());
         }
     }
+    
+    public function search(Request $request)
+{
+    $query = Product::with('company');
+
+    // メーカーで絞り込み
+    if ($request->filled('company_id')) {
+        $query->where('company_id', $request->company_id);
+    }
+
+    // 商品名で絞り込み
+    if ($request->filled('product_name')) {
+        $query->where('product_name', 'like', '%' . $request->product_name . '%');
+    }
+
+    // 価格範囲検索
+    if ($request->filled('price_min')) {
+        $query->where('price', '>=', $request->price_min);
+    }
+    if ($request->filled('price_max')) {
+        $query->where('price', '<=', $request->price_max);
+    }
+
+    // 在庫範囲検索
+    if ($request->filled('stock_min')) {
+        $query->where('stock', '>=', $request->stock_min);
+    }
+    if ($request->filled('stock_max')) {
+        $query->where('stock', '<=', $request->stock_max);
+    }
+
+    // 商品リストを取得
+    $products = $query->get();
+
+    // JSONレスポンスを返す
+    return response()->json($products->map(function ($product) {
+        return [
+            'id' => $product->id,
+            'product_name' => $product->product_name,
+            'price' => $product->price,
+            'stock' => $product->stock,
+            'company' => [
+                'company_name' => $product->company->company_name ?? '不明'
+            ],
+            'image' => $product->image ? asset('storage/' . $product->image) : null
+        ];
+    }));
+}
 }

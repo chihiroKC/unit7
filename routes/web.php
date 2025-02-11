@@ -34,6 +34,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
     Route::get('/products/add', [ProductsController::class, 'add'])->name('products.add');
@@ -42,4 +43,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/products/{id}/delete', [ProductsController::class, 'delete'])->name('products.delete');
     Route::get('/products/{id}/edit', [ProductsController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductsController::class, 'update'])->name('products.update');
+    Route::get('/products/search', [ProductsController::class, 'search'])->name('products.search');
 });
