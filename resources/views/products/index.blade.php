@@ -116,7 +116,7 @@ $(document).ready(function() {
             let productId = $(this).data('id');
 
             $.ajax({
-                url: "/products/" + productId,
+                url: "/products/" + productId + "/delete",
                 type: "DELETE",
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -208,18 +208,34 @@ $(document).ready(function() {
     bindPurchaseEvent();
 
     $('.sort-link').click(function(event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        let column = $(this).data('column');
-        let searchParams = new URLSearchParams(window.location.search);
-        let currentOrder = searchParams.get('order_direction') || 'asc';
+    let column = $(this).data('column');
+    let searchParams = new URLSearchParams(window.location.search);
+    let currentOrder = searchParams.get('order_direction') || 'asc';
 
-        let newOrder = (currentOrder === 'asc') ? 'desc' : 'asc';
-        searchParams.set('order_by', column);
-        searchParams.set('order_direction', newOrder);
+    let newOrder = (currentOrder === 'asc') ? 'desc' : 'asc';
 
-        window.location.href = window.location.pathname + '?' + searchParams.toString();
-    });
+    // 現在の検索条件を取得して、ソートパラメータに追加
+    let company_id = $('#company_id').val();
+    let product_name = $('#product_name').val();
+    let price_min = $('#price_min').val();
+    let price_max = $('#price_max').val();
+    let stock_min = $('#stock_min').val();
+    let stock_max = $('#stock_max').val();
+
+    searchParams.set('order_by', column);
+    searchParams.set('order_direction', newOrder);
+
+    if (company_id) searchParams.set('company_id', company_id);
+    if (product_name) searchParams.set('product_name', product_name);
+    if (price_min) searchParams.set('price_min', price_min);
+    if (price_max) searchParams.set('price_max', price_max);
+    if (stock_min) searchParams.set('stock_min', stock_min);
+    if (stock_max) searchParams.set('stock_max', stock_max);
+
+    window.location.href = window.location.pathname + '?' + searchParams.toString();
+});
 
     $('#search-form').submit(function(event) {
         event.preventDefault();
